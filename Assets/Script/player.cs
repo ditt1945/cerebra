@@ -1,3 +1,16 @@
+// ============================================================
+// Player.cs (Updated — integrasi PlayerAudio)
+//
+// Perubahan dari versi sebelumnya:
+//   - Tambah referensi PlayerAudio di Awake
+//   - PlayJump() dipanggil saat jump pertama
+//   - PlayRoll() dipanggil saat air roll / double jump
+//   - SetGrounded() dipanggil di LateUpdate agar footstep
+//     tahu kapan Bera di tanah
+//
+// Semua logika gameplay tidak berubah.
+// ============================================================
+
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -27,23 +40,25 @@ public class Player : MonoBehaviour
 
     private Rigidbody2D rb;
     private Animator animator;
+    private PlayerAudio playerAudio; // ← referensi audio
 
     private float moveInput;
 
     private bool isGrounded;
     private bool canDoubleJump;
-    private bool isDead = false;
+    private bool isDead    = false;
     private bool isRolling = false;
 
     void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
-        animator = GetComponent<Animator>();
+        rb        = GetComponent<Rigidbody2D>();
+        animator  = GetComponent<Animator>();
+
+        // Cache PlayerAudio — boleh null jika script belum dipasang
+        playerAudio = GetComponent<PlayerAudio>();
 
         if (groundCheck == null)
-        {
             Debug.LogError("GroundCheck belum diisi!");
-        }
     }
 
     void Update()
@@ -74,7 +89,6 @@ public class Player : MonoBehaviour
 
         if (moveInput > 0)
             transform.localScale = new Vector3(1, 1, 1);
-
         else if (moveInput < 0)
             transform.localScale = new Vector3(-1, 1, 1);
 
@@ -84,25 +98,26 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            // Jump pertama
+            // Jump pertama dari tanah
             if (isGrounded)
             {
                 rb.linearVelocity = new Vector2(
                     rb.linearVelocity.x,
                     jumpForce
                 );
+
+                // ← Suara jump
+                playerAudio?.PlayJump();
             }
 
             // Double jump = air roll
             else if (canDoubleJump)
             {
                 canDoubleJump = false;
-                isRolling = true;
+                isRolling     = true;
 
-                // Trigger animasi roll
                 animator.SetTrigger("Roll");
 
-                // Gravity lebih ringan saat roll
                 rb.gravityScale = 1f;
 
                 float dashDirection = transform.localScale.x;
@@ -112,7 +127,9 @@ public class Player : MonoBehaviour
                     dashForceY
                 );
 
-                // Selesai roll setelah beberapa detik
+                // ← Suara air roll
+                playerAudio?.PlayRoll();
+
                 Invoke("StopRoll", 0.35f);
             }
         }
@@ -122,16 +139,12 @@ public class Player : MonoBehaviour
         // =========================
 
         if (transform.position.y < fallLimit)
-        {
             Die();
-        }
     }
 
     void FixedUpdate()
     {
         if (isDead) return;
-
-        // Saat rolling, movement biasa dimatikan
         if (isRolling) return;
 
         float control = isGrounded ? 1f : airControl;
@@ -152,8 +165,7 @@ public class Player : MonoBehaviour
                                  (fallMultiplier - 1) *
                                  Time.fixedDeltaTime;
         }
-        else if (rb.linearVelocity.y > 0 &&
-                 !Input.GetKey(KeyCode.Space))
+        else if (rb.linearVelocity.y > 0 && !Input.GetKey(KeyCode.Space))
         {
             rb.linearVelocity += Vector2.up *
                                  Physics2D.gravity.y *
@@ -173,16 +185,18 @@ public class Player : MonoBehaviour
         // Reset double jump saat landing
         if (isGrounded)
         {
-            canDoubleJump = true;
-
+            canDoubleJump   = true;
             rb.gravityScale = 3f;
         }
+
+        // ← Beritahu PlayerAudio status grounded
+        // agar footstep tahu kapan harus berbunyi
+        playerAudio?.SetGrounded(isGrounded);
     }
 
     void StopRoll()
     {
-        isRolling = false;
-
+        isRolling       = false;
         rb.gravityScale = 3f;
     }
 
@@ -191,21 +205,16 @@ public class Player : MonoBehaviour
         if (other.CompareTag("Finish"))
         {
             Debug.Log("LEVEL SELESAI!");
-
             rb.linearVelocity = Vector2.zero;
-
-            this.enabled = false;
+            this.enabled      = false;
         }
     }
 
     void Die()
     {
         Debug.Log("PLAYER MATI");
-
-        isDead = true;
-
+        isDead            = true;
         rb.linearVelocity = Vector2.zero;
-
         gameOverManager.GameOver();
     }
 
@@ -221,11 +230,7 @@ public class Player : MonoBehaviour
         if (groundCheck != null)
         {
             Gizmos.color = Color.red;
-
-            Gizmos.DrawWireSphere(
-                groundCheck.position,
-                checkRadius
-            );
+            Gizmos.DrawWireSphere(groundCheck.position, checkRadius);
         }
     }
 }
