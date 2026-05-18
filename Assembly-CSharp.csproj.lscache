@@ -50,13 +50,26 @@ TemporaryDependencyNodeTargetIdentifier=netstandard2.1
 /warnaserror+:NU1605
 
 [sourceFiles]
-Assets/
+Assets/Script/
  CameraFollow.cs
+ DoorController.cs
+ DoorOpenTrigger.cs
  FinishManager.cs
  FinishTrigger.cs
+ Fruit.cs
+ FruitManager.cs
+ FruitSpawner.cs
+ FruitUI.cs
  GameOverManager.cs
  Item.cs
+ MainMenu.cs
  player.cs
+ PlayerAudio.cs
+ TimerManager.cs
+ TimerUI.cs
+ TutorialManager.cs
+ TutorialZone.cs
+ TutorialZoneHighligh.cs
 Temp/obj/Assembly-CSharp/.NETStandard,Version=v2.1.AssemblyAttributes.cs
 
 [metadataReferences]

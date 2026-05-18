@@ -1,68 +1,68 @@
-// ============================================================
-// DoorController.cs
-// - Pintu hidden di awal
-// - Muncul otomatis saat semua buah terkumpul
-// - Subscribe ke FruitManager.OnAllFruitsCollected
-// ============================================================
-
 using UnityEngine;
 
 public class DoorController : MonoBehaviour
 {
     [Header("Door Object")]
-    [Tooltip("Drag GameObject End (Idle) ke sini.\n" +
-             "Akan hidden di awal dan muncul saat semua buah terkumpul.")]
+    [Tooltip("Drag End (Idle) ke sini")]
     [SerializeField] private GameObject doorObject;
 
-    [Header("Optional")]
-    [Tooltip("Efek/partikel saat pintu muncul (opsional, boleh kosong).")]
+    [Header("Optional Effect")]
     [SerializeField] private GameObject appearEffect;
 
-    // -------------------------------------------------------
+    // =====================================================
     private void Start()
     {
-        // Sembunyikan pintu di awal
+        // hidden di awal
         if (doorObject != null)
         {
             doorObject.SetActive(false);
-            Debug.Log("[DoorController] Pintu disembunyikan di awal.");
+
+            Debug.Log("[DoorController] Pintu hidden.");
         }
         else
         {
-            Debug.LogError("[DoorController] doorObject belum diisi di Inspector!");
+            Debug.LogError("[DoorController] doorObject belum diisi!");
         }
 
-        // Subscribe ke event semua buah terkumpul
+        // subscribe event semua buah terkumpul
         if (FruitManager.Instance != null)
         {
-            FruitManager.Instance.OnAllFruitsCollected.AddListener(OnAllFruitsCollected);
-            Debug.Log("[DoorController] Subscribe ke FruitManager.OnAllFruitsCollected.");
+            FruitManager.Instance
+                .OnAllFruitsCollected
+                .AddListener(OnAllFruitsCollected);
         }
         else
         {
-            Debug.LogError("[DoorController] FruitManager.Instance tidak ditemukan!");
+            Debug.LogError("[DoorController] FruitManager tidak ditemukan!");
         }
     }
 
+    // =====================================================
     private void OnDestroy()
     {
-        // Unsubscribe saat object dihancurkan
         if (FruitManager.Instance != null)
-            FruitManager.Instance.OnAllFruitsCollected.RemoveListener(OnAllFruitsCollected);
+        {
+            FruitManager.Instance
+                .OnAllFruitsCollected
+                .RemoveListener(OnAllFruitsCollected);
+        }
     }
 
-    // -------------------------------------------------------
-    // Dipanggil FruitManager saat semua buah terkumpul
-    // -------------------------------------------------------
+    // =====================================================
     private void OnAllFruitsCollected()
     {
-        Debug.Log("[DoorController] Semua buah terkumpul! Pintu muncul.");
+        Debug.Log("[DoorController] Semua buah terkumpul!");
 
+        // munculkan pintu
         if (doorObject != null)
+        {
             doorObject.SetActive(true);
+        }
 
-        // Tampilkan efek muncul jika ada
+        // efek opsional
         if (appearEffect != null)
+        {
             appearEffect.SetActive(true);
+        }
     }
 }
