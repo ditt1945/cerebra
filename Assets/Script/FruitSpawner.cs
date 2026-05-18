@@ -1,9 +1,8 @@
 // ============================================================
 // FruitSpawner.cs — FINAL FIX
-// - Spawn 1 buah di Start()
-// - Spawn berikutnya HANYA jika belum semua terkumpul
-// - Guard isSpawning cegah dobel spawn
-// - totalToSpawn mengikuti FruitManager.TotalFruits
+// - Clone dilepas dari parent (SetParent null)
+// - Semua komponen Clone di-enable ulang setelah dilepas
+// - Fruit Prefab manual di scene otomatis disembunyikan
 // ============================================================
 
 using System.Collections;
@@ -47,11 +46,42 @@ public class FruitSpawner : MonoBehaviour
              "Buat empty GameObject di posisi yang diinginkan, drag ke sini.")]
     [SerializeField] private Transform firstSpawnPoint;
 
+    [Header("Manual Fruit di Scene")]
+    [Tooltip("Drag Fruit Prefab yang ada di scene (manual placed) ke sini.\n" +
+             "Akan otomatis disembunyikan saat Play.\n" +
+             "Clone akan dilepas dari parent-nya dan tetap tampil normal.")]
+    [SerializeField] private GameObject manualFruitInScene;
+
     // -------------------------------------------------------
     private Vector3 lastSpawnPosition;
     private int     lastClipIndex = -1;
     private bool    isSpawning    = false;
-    private int     spawnedCount  = 0;   // jumlah buah yang sudah pernah di-spawn
+    private int     spawnedCount  = 0;
+
+    // -------------------------------------------------------
+    private void Awake()
+    {
+        // Awake dipanggil sebelum Start anak-anaknya
+        // Sembunyikan parent manual SEBELUM Clone sempat aktif
+        if (manualFruitInScene != null)
+        {
+            // Sembunyikan hanya SpriteRenderer parent, bukan disable gameObject
+            // agar Clone bisa dilepas dulu sebelum parent disembunyikan
+            var sr = manualFruitInScene.GetComponent<SpriteRenderer>();
+            if (sr != null) sr.enabled = false;
+
+            var col = manualFruitInScene.GetComponent<Collider2D>();
+            if (col != null) col.enabled = false;
+
+            var anim = manualFruitInScene.GetComponent<Animator>();
+            if (anim != null) anim.enabled = false;
+
+            var fruitComp = manualFruitInScene.GetComponent<Fruit>();
+            if (fruitComp != null) fruitComp.enabled = false;
+
+            Debug.Log($"[FruitSpawner] Buah manual disembunyikan: {manualFruitInScene.name}");
+        }
+    }
 
     // -------------------------------------------------------
     private void Start()
@@ -82,19 +112,14 @@ public class FruitSpawner : MonoBehaviour
     }
 
     // -------------------------------------------------------
-    // Dipanggil oleh Fruit.cs saat buah diambil
-    // -------------------------------------------------------
     public void OnFruitCollected()
     {
-        // Jika semua buah sudah terkumpul → tidak spawn lagi
         if (FruitManager.Instance != null && FruitManager.Instance.AllCollected)
         {
             Debug.Log("[FruitSpawner] Semua buah selesai, tidak spawn lagi.");
             return;
         }
 
-        // Jika sudah spawn sebanyak totalFruits → tidak spawn lagi
-        // (cegah spawn buah ke-3 dst ketika total = 2)
         if (FruitManager.Instance != null &&
             spawnedCount >= FruitManager.Instance.TotalFruits)
         {
@@ -102,7 +127,6 @@ public class FruitSpawner : MonoBehaviour
             return;
         }
 
-        // Guard: cegah spawn dobel
         if (isSpawning) return;
 
         StartCoroutine(SpawnAfterDelay());
@@ -120,10 +144,30 @@ public class FruitSpawner : MonoBehaviour
     // -------------------------------------------------------
     private void SpawnFruit()
     {
-        Vector3 spawnPos = FindValidSpawnPosition();
+        Vector3 spawnPos  = FindValidSpawnPosition();
         int     clipIndex = GetRandomClipIndex();
 
+        // Instantiate Clone
         GameObject fruit = Instantiate(fruitPrefab, spawnPos, Quaternion.identity);
+
+        // ← KUNCI: lepas Clone dari parent manapun ke root scene
+        fruit.transform.SetParent(null);
+
+        // ← Re-enable semua komponen Clone yang mungkin ikut ter-disable
+        fruit.SetActive(true);
+
+        var sr = fruit.GetComponent<SpriteRenderer>();
+        if (sr != null) sr.enabled = true;
+
+        var col = fruit.GetComponent<Collider2D>();
+        if (col != null) col.enabled = true;
+
+        var anim = fruit.GetComponent<Animator>();
+        if (anim != null) anim.enabled = true;
+
+        // Pastikan posisi benar setelah dilepas dari parent
+        fruit.transform.position = spawnPos;
+
         lastClipIndex     = clipIndex;
         lastSpawnPosition = spawnPos;
         spawnedCount++;
@@ -135,6 +179,7 @@ public class FruitSpawner : MonoBehaviour
             return;
         }
 
+        fruitScript.enabled = true;
         fruitScript.Setup(fruitIdleClips[clipIndex], collectedClip, this);
 
         Debug.Log($"[FruitSpawner] Spawn #{spawnedCount}: " +

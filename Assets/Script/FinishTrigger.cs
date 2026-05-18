@@ -9,6 +9,9 @@ public class FinishTrigger : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             finishManager.FinishLevel();
+            
+            if (TimerManager.Instance != null)
+                TimerManager.Instance.StopTimer();
         }
     }
 }
