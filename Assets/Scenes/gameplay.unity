@@ -5525,7 +5525,7 @@ MonoBehaviour:
   jumpVolume: 0.7
   rollClip: {fileID: 8300000, guid: 87dd7b0cf2e5a7a4f9f24071ec40120c, type: 3}
   rollVolume: 0.7
-  splashClip: {fileID: 8300000, guid: f94a35cdd0e6de749b5bf4273e66e18a, type: 3}
+  splashClip: {fileID: 8300000, guid: 2248200f23a5b7949b8a8ac2dcd273fd, type: 3}
   splashVolume: 0.8
   minSpeedForFootstep: 0.1
 --- !u!1 &164977532
@@ -5647,14 +5647,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 169155754}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0.02120412, w: 0.9997752}
+  m_LocalRotation: {x: 0.0072010495, y: -0.0000065743006, z: -0.00091294036, w: 0.99997365}
   m_LocalPosition: {x: 40.1, y: 6.5, z: 0}
   m_LocalScale: {x: 0.2, y: 0.2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1969937630}
   m_Father: {fileID: 817069324}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 2.43}
+  m_LocalEulerAnglesHint: {x: 0.825, y: -0.002, z: -0.105}
 --- !u!61 &169155756
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -7974,6 +7974,135 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 994702222}
   m_CullTransparentMesh: 1
+--- !u!1 &997099127
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 997099129}
+  - component: {fileID: 997099128}
+  m_Layer: 0
+  m_Name: BackgroundMusic
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!82 &997099128
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 997099127}
+  m_Enabled: 0
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 8300000, guid: a766b757a2ee5d7489ecb720b1029ec4, type: 3}
+  m_PlayOnAwake: 1
+  m_Volume: 0.387
+  m_Pitch: 1
+  Loop: 1
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!4 &997099129
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 997099127}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -5.12, y: -2.49, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &998180259
 GameObject:
   m_ObjectHideFlags: 0
@@ -8416,7 +8545,7 @@ Transform:
   m_GameObject: {fileID: 1176484478}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 28.43, y: 4.77, z: 0}
+  m_LocalPosition: {x: 28.64, y: 6.37, z: 0}
   m_LocalScale: {x: 1.8751899, y: 4.57838, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -8845,6 +8974,7 @@ MonoBehaviour:
   - Ambil Piala untuk lanjut ke level berikutnya
   initialDelay: 1.2
   fadeDuration: 0.35
+  autoHideDuration: 3
   billboardMode: 1
 --- !u!4 &1264540390
 Transform:
@@ -13437,6 +13567,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DoorOpenTrigger
   doorAnimator: {fileID: 169155760}
+  doorOpenSound: {fileID: 8300000, guid: 281d39305f44e5f4f9221fb0b818c92a, type: 3}
+  doorCloseSound: {fileID: 8300000, guid: 5b6920d78a1f9ea478c10b8c5228751e, type: 3}
+  doorVolume: 0.204
 --- !u!1 &2021791452
 GameObject:
   m_ObjectHideFlags: 0
@@ -13996,6 +14129,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 511646833}
     m_Modifications:
+    - target: {fileID: 229728730382933724, guid: a38e7d5cfaf08284eaf621b40d8c1e82, type: 3}
+      propertyPath: collectSound
+      value: 
+      objectReference: {fileID: 8300000, guid: fecb7c0cebc4bad4faa34cb41bdcfc0f, type: 3}
+    - target: {fileID: 229728730382933724, guid: a38e7d5cfaf08284eaf621b40d8c1e82, type: 3}
+      propertyPath: collectVolume
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3496443721983073215, guid: a38e7d5cfaf08284eaf621b40d8c1e82, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -14068,5 +14209,6 @@ SceneRoots:
   - {fileID: 487733404}
   - {fileID: 1747835370}
   - {fileID: 1544526801}
+  - {fileID: 997099129}
   - {fileID: 1264540390}
   - {fileID: 2090378326}

@@ -1,15 +1,13 @@
 // ============================================================
-// TutorialManager.cs  (versi zone-based)
+// TutorialManager.cs  (versi zone-based + auto-hide)
 //
 // Cara kerja:
 //   - Pesan pertama muncul otomatis saat level mulai.
-//   - Pesan TIDAK hilang karena timer.
-//   - Pesan hanya berganti/hilang saat TutorialZone memanggil
-//     ShowMessage(index) atau HideMessage().
-//   - Setiap TutorialZone di scene menyimpan index pesan
-//     yang ingin ditampilkan saat Bera masuk zone tersebut.
+//   - Pesan otomatis hilang setelah autoHideDuration detik.
+//   - Pesan juga bisa berganti/hilang saat TutorialZone
+//     memanggil ShowMessage(index) atau HideMessage().
 //
-// Dipasang di: GameObject "TutorialManager" (atau di karakter)
+// Dipasang di: GameObject "TutorialManager"
 // ============================================================
 
 using System.Collections;
@@ -41,7 +39,7 @@ public class TutorialManager : MonoBehaviour
     [SerializeField] private Vector3 offset = new Vector3(0f, 2.8f, 0f);
 
     [Header("Daftar Pesan Tutorial")]
-    [Tooltip("Index 0 tampil otomatis saat spawn. Zone menentukan kapan index berikutnya muncul.")]
+    [Tooltip("Index 0 tampil otomatis saat spawn.")]
     [SerializeField] private List<string> messages = new List<string>
     {
         "Gunakan A / D atau \u2190 \u2192 untuk bergerak",
@@ -56,6 +54,9 @@ public class TutorialManager : MonoBehaviour
     [Tooltip("Durasi fade in / fade out (detik)")]
     [SerializeField] private float fadeDuration = 0.35f;
 
+    [Tooltip("Durasi pesan tampil sebelum otomatis hilang (detik). 0 = tidak auto-hide)")]
+    [SerializeField] private float autoHideDuration = 3f;
+
     [Header("Tampilan")]
     [Tooltip("Canvas selalu menghadap kamera")]
     [SerializeField] private bool billboardMode = true;
@@ -66,6 +67,7 @@ public class TutorialManager : MonoBehaviour
     private CanvasGroup canvasGroup;
     private Camera      mainCamera;
     private Coroutine   fadeRoutine;
+    private Coroutine   autoHideRoutine;
     private int         currentIndex = -1;
     private bool        isVisible    = false;
 
@@ -118,11 +120,6 @@ public class TutorialManager : MonoBehaviour
     // -------------------------------------------------------
     // API PUBLIK
     // -------------------------------------------------------
-
-    /// <summary>
-    /// Tampilkan pesan dari daftar messages berdasarkan index.
-    /// Dipanggil oleh TutorialZone.
-    /// </summary>
     public void ShowMessage(int index)
     {
         if (index < 0 || index >= messages.Count)
@@ -133,30 +130,50 @@ public class TutorialManager : MonoBehaviour
 
         if (index == currentIndex && isVisible) return;
 
-        currentIndex = index;
+        currentIndex      = index;
         tutorialText.text = messages[index];
         FadeIn();
+        StartAutoHide();
     }
 
-    /// <summary>
-    /// Tampilkan teks bebas (bukan dari daftar messages).
-    /// Contoh pemakaian: saat semua buah terkumpul.
-    /// </summary>
     public void ShowCustomMessage(string message)
     {
-        currentIndex = -1;
+        currentIndex      = -1;
         tutorialText.text = message;
         FadeIn();
+        StartAutoHide();
     }
 
-    /// <summary>
-    /// Sembunyikan pesan (fade out).
-    /// Dipanggil oleh TutorialZone saat Bera keluar area.
-    /// </summary>
     public void HideMessage()
     {
         if (!isVisible) return;
+        StopAutoHide();
         FadeOut();
+    }
+
+    // -------------------------------------------------------
+    // AUTO-HIDE
+    // -------------------------------------------------------
+    private void StartAutoHide()
+    {
+        StopAutoHide();
+        if (autoHideDuration > 0f)
+            autoHideRoutine = StartCoroutine(AutoHideRoutine());
+    }
+
+    private void StopAutoHide()
+    {
+        if (autoHideRoutine != null)
+        {
+            StopCoroutine(autoHideRoutine);
+            autoHideRoutine = null;
+        }
+    }
+
+    private IEnumerator AutoHideRoutine()
+    {
+        yield return new WaitForSeconds(autoHideDuration);
+        HideMessage();
     }
 
     // -------------------------------------------------------
@@ -167,23 +184,23 @@ public class TutorialManager : MonoBehaviour
         if (fadeRoutine != null) StopCoroutine(fadeRoutine);
         worldCanvas.gameObject.SetActive(true);
         fadeRoutine = StartCoroutine(FadeTo(1f));
-        isVisible = true;
+        isVisible   = true;
     }
 
     private void FadeOut()
     {
         if (fadeRoutine != null) StopCoroutine(fadeRoutine);
         fadeRoutine = StartCoroutine(FadeOutRoutine());
-        isVisible = false;
+        isVisible   = false;
     }
 
     private IEnumerator FadeTo(float target)
     {
-        float start = canvasGroup.alpha;
+        float start   = canvasGroup.alpha;
         float elapsed = 0f;
         while (elapsed < fadeDuration)
         {
-            elapsed += Time.deltaTime;
+            elapsed          += Time.deltaTime;
             canvasGroup.alpha = Mathf.Lerp(start, target, elapsed / fadeDuration);
             yield return null;
         }
